@@ -1,0 +1,39 @@
+name: Watch SDK releases
+
+# Opens an issue when PyPI has a newer stable azure-ai-translation-text than requirements.txt pins, and assigns
+# it to Copilot cloud agent, which opens a pull request that adopts the release.
+# Assigning Copilot needs the COPILOT_ASSIGNMENT_TOKEN repository secret: a fine-grained personal access token
+# for this repository with read and write access to actions, contents, issues, and pull requests.
+
+on:
+  schedule:
+    - cron: "37 6 * * *"
+  workflow_dispatch:
+
+permissions: {}
+
+concurrency:
+  group: ${{ github.workflow }}
+
+jobs:
+  watch:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      contents: read
+      issues: write
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+
+      - uses: actions/setup-python@v7
+        with:
+          python-version: "3.14"
+
+      - run: python -m pip install packaging
+
+      - run: python scripts/watch_sdk_release.py
+        env:
+          GH_TOKEN: ${{ github.token }}
+          COPILOT_ASSIGNMENT_TOKEN: ${{ secrets.COPILOT_ASSIGNMENT_TOKEN }}

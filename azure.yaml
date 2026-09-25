@@ -1,0 +1,6 @@
+name: azure-translator-recipes
+metadata:
+  template: azure-translator-recipes@0.0.1-beta
+infra:
+  provider: bicep
+  path: infra
